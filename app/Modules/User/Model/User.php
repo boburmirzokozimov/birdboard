@@ -1,9 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Modules\User\Model;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Modules\Project\Model\Project;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -41,4 +44,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    protected static function newFactory(): UserFactory
+    {
+        return new UserFactory();
+    }
+
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class, 'owner_id');
+    }
 }
