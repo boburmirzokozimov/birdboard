@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ProjectsController;
+use App\Http\Controllers\Project\ProjectController;
+use App\Http\Controllers\Project\ProjectTaskController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,10 +29,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/projects', [ProjectsController::class, 'index'])->name('projects');
-    Route::get('/projects/create', [ProjectsController::class, 'create'])->name('projects.create');
-    Route::get('/projects/{project}', [ProjectsController::class, 'show'])->name('projects.show');
-    Route::post('/projects', [ProjectsController::class, 'store'])->name('projects.store');
+    Route::get('/projects', [ProjectController::class, 'index'])->name('projects');
+    Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
+    Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
+    Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
+
+    Route::post('/projects/{project}/task', [ProjectTaskController::class, 'store'])->name('projects.tasks.store');
+
 });
 
 require __DIR__ . '/auth.php';

@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Project;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Project\CreateRequest;
 use App\Modules\Project\Model\Project;
 use App\Modules\Project\Model\ProjectRepository;
 
-class ProjectsController extends Controller
+class ProjectController extends Controller
 {
     public function __construct(private ProjectRepository $repository)
     {
@@ -26,6 +27,7 @@ class ProjectsController extends Controller
         if (auth()->user()->isNot($project->owner)) {
             abort(403);
         }
+
         return view('projects.show', [
             'project' => $project
         ]);
@@ -33,7 +35,7 @@ class ProjectsController extends Controller
 
     public function store(CreateRequest $request)
     {
-        auth()->user()->projects()->create($request->validated());
+        $project = auth()->user()->projects()->create($request->validated());
 
         return redirect('/projects');
     }

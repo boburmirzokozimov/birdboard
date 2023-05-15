@@ -16,12 +16,16 @@
             <div class=" dark:bg-gray-800 overflow-hidden sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
 
-                    <div class="flex">
+                    <div class="grid grid-cols-3 gap-4">
                         @forelse($projects as $project)
-                            <div class="mr-4 bg-white shadow p-4 rounded w-1/3 h-[200px]">
-                                <h3 class="text-xl">{{$project->title}}</h3>
+                            <div class="card">
+                                <h3 class="text-xl py-4 -ml-4 mb-3 border-l-4  border-blue-300  pl-4">
+                                    <a href="{{$project->path()}}">
+                                        {{$project->title}}
+                                    </a>
+                                </h3>
                                 <div class="mt-4">
-                                    <p class="text-gray-400">{{Str::limit($project->description,200)}}</p>
+                                    <p class="text-gray-400">{{Str::limit($project->description,150)}}</p>
                                 </div>
                             </div>
                         @empty

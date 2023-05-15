@@ -3,9 +3,9 @@
 namespace Tests\Feature;
 
 use App\Modules\Project\Model\Project;
-use App\Modules\User\Model\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class ManageProjectTest extends TestCase
@@ -35,36 +35,33 @@ class ManageProjectTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $this->be(User::factory()->create());
+        $this->signIn();
 
         $this->get('/projects/create')->assertStatus(200);
 
-        $attributes = [
-            'title' => $this->faker->title(),
-            'description' => $this->faker->paragraph()
-        ];
+        $project = Project::factory()->raw();
 
-        $this->post('/projects', $attributes)->assertRedirect('/projects');
+        $this->post('/projects', $project)->assertRedirect('/projects');
     }
 
     public function test_a_user_can_view_their_project()
     {
         $this->withoutExceptionHandling();
 
-        $this->be(User::factory()->create());
+        $this->signIn();
 
         $project = Project::factory()->create(['owner_id' => auth()->id()]);
 
         $this->get($project->path())
             ->assertSee($project->title)
-            ->assertSee($project->description);
+            ->assertSee(Str::limit($project->description, 150));
     }
 
     public function test_a_user_cannot_view_others_projects()
     {
         $this->withExceptionHandling();
 
-        $this->be(User::factory()->create());
+        $this->signIn();
 
         $project = Project::factory()->create();
 
@@ -74,7 +71,7 @@ class ManageProjectTest extends TestCase
 
     public function test_a_project_requires_title()
     {
-        $this->actingAs(User::factory()->create());
+        $this->signIn();
 
         $attributes = Project::factory()->raw(['title' => '']);
 
@@ -83,7 +80,7 @@ class ManageProjectTest extends TestCase
 
     public function test_a_project_requires_description()
     {
-        $this->actingAs(User::factory()->create());
+        $this->signIn();
 
         $attributes = Project::factory()->raw(['description' => '']);
 
