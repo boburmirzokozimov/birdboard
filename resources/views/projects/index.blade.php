@@ -18,16 +18,7 @@
 
                     <div class="grid grid-cols-3 gap-4">
                         @forelse($projects as $project)
-                            <div class="card">
-                                <h3 class="text-xl py-4 -ml-4 mb-3 border-l-4  border-blue-300  pl-4">
-                                    <a href="{{$project->path()}}">
-                                        {{$project->title}}
-                                    </a>
-                                </h3>
-                                <div class="mt-4">
-                                    <p class="text-gray-400">{{Str::limit($project->description,150)}}</p>
-                                </div>
-                            </div>
+                            @include('projects.card')
                         @empty
                             <div>
                                 No projects yet

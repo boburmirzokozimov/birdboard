@@ -22,9 +22,7 @@ class TaskFactory extends Factory
     {
         return [
             'body' => $this->faker->paragraph(),
-            'project_id' => function () {
-                return Project::factory()->create()->id;
-            }
+            'project_id' => Project::factory()
         ];
     }
 }

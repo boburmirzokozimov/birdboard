@@ -2,8 +2,10 @@
 
 namespace App\Modules\Project\Model;
 
+use App\Modules\Activity\Model\Activity;
 use App\Modules\CustomModel;
 use App\Modules\Project\Model\Task\Task;
+use App\Modules\Project\Trait\RecordsActivity;
 use App\Modules\User\Model\User;
 use Database\Factories\ProjectFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,6 +13,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Project extends CustomModel
 {
+    use RecordsActivity;
+
+    public array $old = [];
+
     protected static function newFactory(): ProjectFactory
     {
         return new ProjectFactory();
@@ -36,4 +42,8 @@ class Project extends CustomModel
         return $this->hasMany(Task::class,);
     }
 
+    public function activity(): HasMany
+    {
+        return $this->hasMany(Activity::class)->latest();
+    }
 }

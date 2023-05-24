@@ -2,28 +2,30 @@
 
 namespace App\Http\Requests\Project\Task;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class CreateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return true;
+        return Gate::allows('update', $this->project());
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array|string>
-     */
+    private function project()
+    {
+        return $this->route('project');
+    }
+
     public function rules(): array
     {
         return [
             'body' => 'string|required',
         ];
+    }
+
+    public function persist()
+    {
+        return tap($this->project())->addTask($this->validated());
     }
 }

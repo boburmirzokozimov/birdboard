@@ -12,7 +12,8 @@ return new class extends Migration {
     {
         Schema::create('projects_tasks', function (Blueprint $table) {
             $table->id();
-            $table->string('body');
+            $table->text('body');
+            $table->boolean('completed')->default(false);
             $table->unsignedBigInteger('project_id');
             $table->timestamps();
 

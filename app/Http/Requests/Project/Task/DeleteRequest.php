@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Requests\Project;
+namespace App\Http\Requests\Project\Task;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateRequest extends FormRequest
+class DeleteRequest extends FormRequest
 {
+    public mixed $body;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -23,9 +25,7 @@ class CreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'string|required',
-            'description' => 'string|required',
-            'notes' => 'string|required|min:3'
+            'id' => 'int|exists:projects_tasks,id',
         ];
     }
 }

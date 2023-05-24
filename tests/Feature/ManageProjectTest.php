@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Modules\Project\Model\Project;
+use Facades\Tests\Setup\ProjectFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Str;
@@ -12,22 +13,14 @@ class ManageProjectTest extends TestCase
 {
     use WithFaker, RefreshDatabase;
 
-    public function test_guests_cannot_create_a_project()
-    {
-        $attributes = Project::factory()->raw();
-
-        $this->post('/projects', $attributes)->assertRedirect('/login');
-    }
-
-    public function test_guests_cannot_view_projects()
-    {
-        $this->get('/projects')->assertRedirect('/login');
-    }
-
-    public function test_guests_cannot_view_a_single_project()
+    public function test_guests_cannot_manage_projects()
     {
         $project = Project::factory()->create();
 
+        $this->post('/projects', $project->toArray())->assertRedirect('/login');
+        $this->get('/projects')->assertRedirect('/login');
+        $this->get($project->path() . '/edit')->assertRedirect('/login');
+        $this->patch($project->path())->assertRedirect('/login');
         $this->get($project->path())->assertRedirect('/login');
     }
 
@@ -44,28 +37,80 @@ class ManageProjectTest extends TestCase
         $this->post('/projects', $project)->assertRedirect('/projects');
     }
 
-    public function test_a_user_can_view_their_project()
+    public function test_the_owner_can_update_the_project()
     {
-        $this->withoutExceptionHandling();
+        $project = ProjectFactory::create();
+
+        $this->actingAs($project->owner)
+            ->patch($project->path(), [
+                'notes' => 'New Updated Notes',
+                'title' => 'Changed',
+                'description' => 'Changed',
+            ]);
+
+        $this->get($project->path())
+            ->assertSee(['New Updated Notes']);
+
+        $this->assertDatabaseHas('projects', [
+            'notes' => 'New Updated Notes',
+            'title' => 'Changed',
+            'description' => 'Changed',
+        ]);
+    }
+
+    public function test_the_owner_can_delete_the_project()
+    {
+        $project = ProjectFactory::create();
+
+        $this->actingAs($project->owner)
+            ->delete($project->path())
+            ->assertRedirect('/projects');
+
+        $this->assertDatabaseMissing('projects', $project->only('id'));
+    }
+
+    public function test_unauthorized_users_cannot_delete_the_project()
+    {
+        $project = ProjectFactory::create();
+
+        $this->delete($project->path())
+            ->assertRedirect('/login');
 
         $this->signIn();
 
-        $project = Project::factory()->create(['owner_id' => auth()->id()]);
+        $this->delete($project->path())
+            ->assertStatus(403);
+    }
 
-        $this->get($project->path())
+    public function test_a_user_can_view_their_project()
+    {
+        $this->withoutExceptionHandling();
+        $project = ProjectFactory::create();
+
+        $this->actingAs($project->owner)
+            ->get($project->path())
             ->assertSee($project->title)
-            ->assertSee(Str::limit($project->description, 150));
+            ->assertSee(Str::limit($project->description, 150))
+            ->assertSee($project->notes);
     }
 
     public function test_a_user_cannot_view_others_projects()
     {
-        $this->withExceptionHandling();
-
         $this->signIn();
 
         $project = Project::factory()->create();
 
         $this->get($project->path())->assertForbidden();
+    }
+
+
+    public function test_a_user_cannot_update_others_projects()
+    {
+        $this->signIn();
+
+        $project = Project::factory()->create();
+
+        $this->patch($project->path())->assertForbidden();
     }
 
 

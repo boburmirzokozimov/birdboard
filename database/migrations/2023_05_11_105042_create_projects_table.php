@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('title');
             $table->mediumText('description');
+            $table->longText('notes')->nullable();
             $table->unsignedBigInteger('owner_id');
             $table->timestamps();
 
