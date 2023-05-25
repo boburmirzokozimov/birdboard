@@ -1,1 +1,1 @@
-Project was created
+Project was created,by {{$activity->user->name}}

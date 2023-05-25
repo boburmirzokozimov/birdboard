@@ -85,6 +85,7 @@ class ManageProjectTest extends TestCase
     public function test_a_user_can_view_their_project()
     {
         $this->withoutExceptionHandling();
+
         $project = ProjectFactory::create();
 
         $this->actingAs($project->owner)
@@ -101,6 +102,13 @@ class ManageProjectTest extends TestCase
         $project = Project::factory()->create();
 
         $this->get($project->path())->assertForbidden();
+    }
+
+    public function test_a_user_can_see_all_projects_that_they_have_been_invited_to()
+    {
+        $project = tap(ProjectFactory::create())->invite($this->signIn());
+
+        $this->get('/projects')->assertSee($project->title);
     }
 
 

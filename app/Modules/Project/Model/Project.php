@@ -9,6 +9,7 @@ use App\Modules\Project\Trait\RecordsActivity;
 use App\Modules\User\Model\User;
 use Database\Factories\ProjectFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Project extends CustomModel
@@ -45,5 +46,15 @@ class Project extends CustomModel
     public function activity(): HasMany
     {
         return $this->hasMany(Activity::class)->latest();
+    }
+
+    public function invite(User|int $user): void
+    {
+        $this->members()->attach($user);
+    }
+
+    public function members(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'project_members')->withTimestamps();
     }
 }

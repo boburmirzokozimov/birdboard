@@ -4,9 +4,22 @@
             <p class="font-semibold text-gray-400 dark:text-gray-200 leading-tight">
                 <a href="{{ route('projects') }}">Projects</a> / {{$project->title}}
             </p>
-            <a class="custom-link" href="{{ route('projects.edit',['project'=>$project->id]) }}">
-                Edit
-            </a>
+
+            <div class="items-center flex">
+                @foreach($project->members as $member)
+                    <img
+                        src="{{gravatar_url($member->email)}}"
+                        alt="{{$member->name}}'s avatar"
+                        class="rounded-full w-8 mr-2">
+                @endforeach
+                <img
+                    src="{{gravatar_url($project->owner->email)}}"
+                    alt="{{$project->owner->email}}'s avatar"
+                    class="rounded-full w-8 mr-2">
+                <a class="custom-link ml-4" href="{{ route('projects.edit',['project'=>$project->id]) }}">
+                    Edit
+                </a>
+            </div>
         </div>
     </x-slot>
 

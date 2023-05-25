@@ -21,7 +21,7 @@ class ProjectTaskController extends Controller
     public function destroy(Project $project, DeleteRequest $request)
     {
         Task::destroy($request->validated());
-        
+
         return redirect($project->path());
     }
 

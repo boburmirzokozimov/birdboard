@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Project;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Project\CreateRequest;
+use App\Http\Requests\Project\InviteRequest;
 use App\Http\Requests\Project\UpdateRequest;
 use App\Modules\Project\Model\Project;
 
@@ -14,7 +15,7 @@ class ProjectController extends Controller
     public function index()
     {
         return view('projects.index', [
-            'projects' => auth()->user()->projects
+            'projects' => auth()->user()->accessibleProjects(),
         ]);
     }
 
@@ -54,6 +55,11 @@ class ProjectController extends Controller
     }
 
     public function update(UpdateRequest $request, Project $project)
+    {
+        return redirect($request->persist()->path());
+    }
+
+    public function invite(InviteRequest $request, Project $project)
     {
         return redirect($request->persist()->path());
     }
