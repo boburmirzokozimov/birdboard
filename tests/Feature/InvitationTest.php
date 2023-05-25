@@ -27,6 +27,30 @@ class InvitationTest extends TestCase
         $this->assertTrue($project->members->contains($userInviteTo));
     }
 
+    public function test_a_project_can_remove_a_user()
+    {
+        $project = ProjectFactory::create();
+
+        $userInviteTo = User::factory()->create();
+
+        $this->actingAs($project->owner)
+            ->post($project->path() . '/invitations', [
+                'id' => $userInviteTo->id
+            ]);
+
+        $this->assertTrue($project->members->contains($userInviteTo));
+
+        $this->actingAs($project->owner)
+            ->delete($project->path() . '/invitations', [
+                'id' => $userInviteTo->id
+            ]);
+
+        $project->refresh();
+        
+        $this->assertFalse($project->members->contains($userInviteTo));
+
+    }
+
     public function test_invited_users_may_update_project(): void
     {
         $project = ProjectFactory::create();

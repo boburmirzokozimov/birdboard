@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/projects/{project}/task/{task}', [ProjectTaskController::class, 'update'])->name('projects.tasks.update');
 
     Route::post('/projects/{project}/invitations', [ProjectInvitationsController::class, 'store'])->name('projects.invitations.store');
+    Route::delete('/projects/{project}/invitations', [ProjectInvitationsController::class, 'destroy'])->name('projects.invitations.destroy');
 
 });
 

@@ -57,4 +57,9 @@ class Project extends CustomModel
     {
         return $this->belongsToMany(User::class, 'project_members')->withTimestamps();
     }
+
+    public function remove(User|int $user): void
+    {
+        $this->members()->detach($user);
+    }
 }

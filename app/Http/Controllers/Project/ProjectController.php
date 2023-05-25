@@ -6,9 +6,9 @@ namespace App\Http\Controllers\Project;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Project\CreateRequest;
-use App\Http\Requests\Project\InviteRequest;
 use App\Http\Requests\Project\UpdateRequest;
 use App\Modules\Project\Model\Project;
+use App\Modules\User\Model\User;
 
 class ProjectController extends Controller
 {
@@ -24,7 +24,8 @@ class ProjectController extends Controller
         $this->authorize('update', $project);
 
         return view('projects.show', [
-            'project' => $project
+            'project' => $project,
+            'users' => User::all()
         ]);
     }
 
@@ -42,7 +43,7 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
-        $this->authorize('update', $project);
+        $this->authorize('manage', $project);
 
         $project->delete();
 
@@ -55,11 +56,6 @@ class ProjectController extends Controller
     }
 
     public function update(UpdateRequest $request, Project $project)
-    {
-        return redirect($request->persist()->path());
-    }
-
-    public function invite(InviteRequest $request, Project $project)
     {
         return redirect($request->persist()->path());
     }

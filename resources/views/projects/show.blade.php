@@ -1,16 +1,49 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between flex-row">
-            <p class="font-semibold text-gray-400 dark:text-gray-200 leading-tight">
-                <a href="{{ route('projects') }}">Projects</a> / {{$project->title}}
-            </p>
+        <div class="flex justify-between flex-row items-center">
+            <div class="items-center flex">
+                <p class="font-semibold text-gray-400 dark:text-gray-200 leading-tight mr-6">
+                    <a href="{{ route('projects') }}">Projects</a> / {{$project->title}}
+                </p>
+
+                <!-- Modal HTML embedded directly into document -->
+                <div id="ex1" class="modal">
+                    @include('projects.create_task')
+                    <a href="" rel="modal:close"></a>
+                </div>
+
+                <!-- Link to open the modal -->
+                <a href="#ex1" class="custom-link" rel="modal:open">Create a new task</a>
+            </div>
+
 
             <div class="items-center flex">
+
+
+                <!-- Link to open the modal -->
                 @foreach($project->members as $member)
-                    <img
-                        src="{{gravatar_url($member->email)}}"
-                        alt="{{$member->name}}'s avatar"
-                        class="rounded-full w-8 mr-2">
+                    <div id="ex2" class="modal ">
+                        <form action="{{ route('projects.invitations.destroy',['project'=>$project->id]) }}"
+                              method="POST"
+                              class="flex justify-center justify-items-center flex-col text-center">
+                            Are you sure you want to remove the member?
+                            @csrf
+                            @method('DELETE')
+                            <input type="hidden" name="id" value="{{$member->id}}">
+                            <button type="submit" class="mx-auto mt-2 custom-link w-1/4" style="background-color: red">
+                                Remove
+                            </button>
+                        </form>
+                    </div>
+                    <a href="" rel="modal:close"></a>
+
+                    <a href="#ex2" class="" rel="modal:open">
+                        <img
+                            src="{{gravatar_url($member->email)}}"
+                            alt="{{$member->name}}'s avatar"
+                            class="rounded-full w-8 mr-2">
+                    </a>
+
                 @endforeach
                 <img
                     src="{{gravatar_url($project->owner->email)}}"
@@ -28,15 +61,14 @@
             <div class="flex flex-col ">
                 <div>
                     <h3 class="text-gray-400">Tasks</h3>
+                    <div class="card mb-6">
+                        @foreach($project->tasks as $task)
 
-                    @foreach($project->tasks as $task)
-
-                        <div class="card mb-6">
                             <form method="POST" class="flex"
                                   action="{{$task->path()}}">
                                 @method('PATCH')
                                 @csrf
-                                <div class="flex w-full align-middle items-center">
+                                <div class="flex w-full align-middle items-center mb-2">
                                     <input id="task"
                                            class="block p-2.5 w-full text-sm  bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 {{$task->completed  ? 'text-gray-400 line-through' : ''}} "
                                            type="text"
@@ -50,13 +82,13 @@
                                            name="completed" id="completed">
                                 </div>
                             </form>
-                        </div>
 
-                    @endforeach
+                        @endforeach
+                    </div>
 
                 </div>
                 <div class="">
-                    <label for="notes" class="border-gray-400">General Notes</label>
+                    <label for="notes" class="text-gray-400 mb-6">General Notes</label>
                     <div class="card">
                         <form action="{{$project->path()}}" method="POST">
                             @csrf
@@ -80,6 +112,10 @@
             @include('projects.card')
 
             @include('projects.activity.card')
+
+            @can('manage',$project)
+                @include('projects.invite')
+            @endcan
         </div>
     </main>
 
